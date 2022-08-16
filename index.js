@@ -13,7 +13,7 @@ const {run} = require('./main');
 const {routine} = require('./worker');
 
 // Run every 5 minutes at second 0
-cron.schedule('0 0/5 0 ? * * *', () => routine());
+cron.schedule('*/5 * * * *', () => routine());
 
 // Initialize the app
 run(production).catch(console.dir);
