@@ -1,0 +1,2 @@
+# Ignore the locally installed node_modules
+/node_modules

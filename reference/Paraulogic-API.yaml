@@ -1,0 +1,163 @@
+openapi: 3.0.0
+x-stoplight:
+  id: v8nz2ovku621o
+info:
+  title: Paraulogic API
+  version: 1.0.0
+  description: The API used by the Paraulogic's applications to communicate with the server.
+  contact:
+    name: Arnau Mora
+    email: arnyminer.z@gmail.com
+  license:
+    url: 'https://github.com/ArnyminerZ/Paraulogic-Android/blob/master/LICENSE'
+servers:
+  - url: 'http://localhost:3000'
+    description: Development Server
+paths:
+  /v1/game_info:
+    get:
+      summary: Get Game Information
+      tags: []
+      responses:
+        '200':
+          description: OK - The operation was performed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    description: Whether or not the operation was performed successfully.
+                  data:
+                    type: object
+                    required:
+                      - timestamp
+                      - game_info
+                    description: The data fetched from the server.
+                    properties:
+                      timestamp:
+                        type: string
+                        description: The timestamp of the moment the data was fetched.
+                        format: date-time
+                        pattern: '^\\d{4}-[0-1][0-3]-[0-3]\\d{1}T[0-2]\\d{1}:[0-5]\\d{1}:[0-5]\\d{1}Z$'
+                        example: '2022-03-24T17:56:01.168+01:00'
+                      game_info:
+                        $ref: '#/components/schemas/GameInfo'
+                required:
+                  - success
+                  - data
+        '400':
+          description: Bad Request - The `date` parameter introduced doesn't have a valid format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether or not the operation was performed successfully.
+                    default: false
+                  data:
+                    type: object
+                    description: Will be empty since the operation was not successful.
+                required:
+                  - success
+                  - data
+        '404':
+          description: Not Found - The date introduced doesn't have a match in the database.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    default: false
+                    description: Whether or not the operation was performed successfully.
+                  data:
+                    type: object
+                    description: Will be empty since the operation was not successful.
+                required:
+                  - success
+                  - data
+        '500':
+          description: Internal Server Error - An uncontrolled exception ocurred on the server side.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether or not the operation was performed successfully.
+                    default: false
+                  error:
+                    type: object
+                    description: More information about the error. Will not be present on production.
+                required:
+                  - success
+      operationId: get-v1-game_info
+      description: Returns the game information for a desired day.
+      parameters:
+        - schema:
+            type: string
+            format: date
+            example: '2022-05-12'
+            pattern: '^\d{4}-((0[1-9])|(1[0-2]))-((0[1-9])|(1[0-9])|(3[0-1]))$'
+            minLength: 10
+            maxLength: 10
+          in: query
+          name: date
+          allowEmptyValue: true
+          description: 'The date of the game to fetch. If null or empty, it will be the last one available.'
+components:
+  schemas:
+    GameInfo:
+      title: GameInfo
+      x-stoplight:
+        id: ldjyl6svr3azx
+      type: object
+      properties:
+        centerLetter:
+          type: string
+          description: The letter that goes in the center of the board.
+          maxLength: 1
+          minLength: 1
+          example: a
+          pattern: '^[a-z]'
+        letters:
+          type: array
+          minItems: 5
+          maxItems: 6
+          items:
+            type: string
+            minLength: 1
+            maxLength: 1
+            pattern: '^[a-z]'
+            example: a
+            format: character
+        words:
+          type: object
+          description: 'All the words of the day. The key matches what the user has to guess, the value is the display value of the word.'
+      required:
+        - centerLetter
+        - letters
+        - words
+      x-examples:
+        example-1:
+          centerLetter: p
+          letters:
+            - e
+            - i
+            - o
+            - r
+            - s
+            - v
+          words:
+            esper: esper
+            espero: esperó
+            espes: espès
+            porro: porro o porró
+      description: The object that contains all the game information for a day.

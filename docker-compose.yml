@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  api:
+    build: .
+    container_name: api
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+    environment:
+      HTTP_PORT: "${HTTP_PORT}"
+    working_dir: /opt/api
+    links:
+      - db
+    volumes:
+      - ./:/opt/api
+      - node_modules:/opt/api/node_modules
+  db:
+    image: mongo
+    container_name: mongo_db
+    restart: always
+    expose:
+      - "27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+  node_modules:
