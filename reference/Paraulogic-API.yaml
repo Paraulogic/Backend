@@ -32,22 +32,116 @@ paths:
                     description: Whether or not the operation was performed successfully.
                   data:
                     type: object
+                    description: The data fetched from the server.
                     required:
                       - timestamp
                       - game_info
-                    description: The data fetched from the server.
                     properties:
                       timestamp:
                         type: string
                         description: The timestamp of the moment the data was fetched.
                         format: date-time
-                        pattern: '^\\d{4}-[0-1][0-3]-[0-3]\\d{1}T[0-2]\\d{1}:[0-5]\\d{1}:[0-5]\\d{1}Z$'
-                        example: '2022-03-24T17:56:01.168+01:00'
+                        example: '2022-08-16T16:42:19.297Z'
                       game_info:
                         $ref: '#/components/schemas/GameInfo'
                 required:
                   - success
                   - data
+              examples:
+                example-1:
+                  value:
+                    success: true
+                    data:
+                      result:
+                        _id: 62fbc8ebd2631e02e4377cfa
+                        timestamp: '2022-08-16T16:42:19.297Z'
+                        game_info:
+                          letters:
+                            - c
+                            - a
+                            - 'n'
+                            - i
+                            - l
+                          centerLetter: u
+                          words:
+                            acicula: acícula
+                            aculi: aculi
+                            acull: acull
+                            ainu: ainu
+                            alaui: alauí
+                            allau: allau
+                            anual: anual
+                            anunci: anunci
+                            auc: aüc
+                            auca: auca
+                            aula: aula
+                            aulic: àulic
+                            aulica: àulica
+                            aulina: aulina
+                            cacau: cacau
+                            calau: calau
+                            calcul: càlcul
+                            caliu: caliu
+                            calua: calua
+                            canicula: canícula
+                            canula: cànula
+                            cau: cau
+                            caua: caua
+                            clau: clau
+                            cluc: cluc
+                            cluca: cluca
+                            clucaina: clucaina
+                            clucull: clucull
+                            cua: cua
+                            cuc: cuc
+                            cuca: cuca
+                            cucala: cucala
+                            cuculla: cuculla
+                            cuic: cuïc
+                            cuina: cuina
+                            cul: cul
+                            cula: culà
+                            culana: culana
+                            culla: culla
+                            inulina: inulina
+                            iuan: iuan
+                            iuca: iuca
+                            lauan: lauan
+                            llacuna: llacuna
+                            llau: llau
+                            llauna: llauna
+                            lluc: lluc
+                            llucana: llucana
+                            lluna: lluna
+                            luca: lucà
+                            lucana: lucana
+                            luci: luci
+                            lullia: lul·lià
+                            lulliana: lul·liana
+                            lunula: lúnula
+                            nau: nau
+                            niu: niu
+                            nua: nua
+                            nuc: nuc
+                            nuca: nuca
+                            nucli: nucli
+                            nucula: núcula
+                            nul: nul
+                            nulla: nul·la
+                            nun: nun
+                            nunci: nunci
+                            nuncia: núncia
+                            nuu: nuu
+                            ula: ulà
+                            ull: ull
+                            ullal: ullal
+                            ullcluc: ullcluc
+                            ullcluca: ullcluca
+                            ulna: ulna
+                            una: una
+                            uncial: uncial
+                            unic: únic
+                            unica: única
         '400':
           description: Bad Request - The `date` parameter introduced doesn't have a valid format.
           content:
@@ -112,6 +206,57 @@ paths:
           name: date
           allowEmptyValue: true
           description: 'The date of the game to fetch. If null or empty, it will be the last one available.'
+  /v1/history:
+    get:
+      summary: Get Games History
+      tags: [ ]
+      responses:
+        '200':
+          description: OK - The operation was performed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether or not the operation was performed successfully.
+                    default: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        timestamp:
+                          type: string
+                          description: The timestamp of the moment the data was fetched.
+                          format: date-time
+                          example: '2022-08-16T16:42:19.297Z'
+                        game_info:
+                          $ref: '#/components/schemas/GameInfo'
+                      required:
+                        - timestamp
+                        - game_info
+                required:
+                  - success
+        '500':
+          description: Internal Server Error - An uncontrolled exception ocurred on the server side.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether or not the operation was performed successfully.
+                    default: false
+                  error:
+                    type: object
+                    description: More information about the error. Will not be present on production.
+                required:
+                  - success
+      operationId: get-v1-history
+      description: Gets all the games registered on the database.
 components:
   schemas:
     GameInfo:
@@ -119,8 +264,24 @@ components:
       x-stoplight:
         id: ldjyl6svr3azx
       type: object
+      x-examples:
+        example-1:
+          center_letter: p
+          letters:
+            - e
+            - i
+            - o
+            - r
+            - s
+            - v
+          words:
+            esper: esper
+            espero: esperó
+            espes: espès
+            porro: porro o porró
+      description: The object that contains all the game information for a day.
       properties:
-        centerLetter:
+        center_letter:
           type: string
           description: The letter that goes in the center of the board.
           maxLength: 1
@@ -142,22 +303,6 @@ components:
           type: object
           description: 'All the words of the day. The key matches what the user has to guess, the value is the display value of the word.'
       required:
-        - centerLetter
+        - center_letter
         - letters
         - words
-      x-examples:
-        example-1:
-          centerLetter: p
-          letters:
-            - e
-            - i
-            - o
-            - r
-            - s
-            - v
-          words:
-            esper: esper
-            espero: esperó
-            espes: espès
-            porro: porro o porró
-      description: The object that contains all the game information for a day.
