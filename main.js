@@ -41,6 +41,9 @@ module.exports = {
 
             try {
                 await db.connect();
+                /**
+                 * @type {{id:string,timestamp:string,game_info:{letters:string[],centerLetter:string,words:{}}}|null}
+                 */
                 const result = await db
                     .db(DATABASE_NAME)
                     .collection('game_info')
@@ -53,7 +56,51 @@ module.exports = {
                 if (result == null)
                     return res.status(404).json({success: false, data: {}});
 
-                res.status(200).json({success: true, data: {result}});
+                res.status(200).json({
+                    success: true,
+                    data: {
+                        timestamp: result.timestamp,
+                        game_info: {
+                            letters: result.game_info.letters,
+                            center_letter: result.game_info.centerLetter,
+                            words: result.game_info.words,
+                        },
+                    },
+                });
+            } catch (e) {
+                console.error(e);
+                res.status(500).json({success: false, error: production ? null : e});
+            } finally {
+                await db.close();
+            }
+        });
+        app.get('/v1/history', async (req, res) => {
+            try {
+                await db.connect();
+                /**
+                 * @type {{id:string,timestamp:string,game_info:{letters:string[],centerLetter:string,words:{}}}[]|null}
+                 */
+                const result = await db
+                    .db(DATABASE_NAME)
+                    .collection('game_info')
+                    .find()
+                    .toArray();
+                if (result == null)
+                    return res.status(404).json({success: false, data: {}});
+
+                res.status(200).json({
+                    success: true,
+                    data: result.map((e) => {
+                        return {
+                            timestamp: e.timestamp,
+                            game_info: {
+                                letters: e.game_info.letters,
+                                center_letter: e.game_info.centerLetter,
+                                words: e.game_info.words,
+                            },
+                        };
+                    })
+                });
             } catch (e) {
                 console.error(e);
                 res.status(500).json({success: false, error: production ? null : e});
