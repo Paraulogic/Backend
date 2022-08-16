@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  api:
+    image: arnyminerz/paraulogic-backend:latest
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      HTTP_PORT: "80"
