@@ -6,6 +6,16 @@ const {MONGO_URI, DATABASE_NAME, HTTP_PORT} = require('./consts');
 
 const DATE_REGEX = /^\d{4}-((0[1-9])|(1[0-2]))-((0[1-9])|(1\d)|(3[0-1]))$/g;
 
+/**
+ * @interface GameInfo
+ * @type {{id:string,timestamp:string,game_info:{letters:string[],centerLetter:string,words:{}}}}
+ */
+
+/**
+ * @type {{GameInfo}}
+ */
+let cache = {};
+
 module.exports = {
     run: async (production) => {
         const db = new MongoClient(MONGO_URI);
@@ -38,21 +48,30 @@ module.exports = {
                     return res.status(400).json({success: false, data: {}});
                 date = new Date(dateValue);
             }
+            /**
+             * @type {Date}
+             */
+            const dateStart = startOfDay(date);
 
             try {
-                await db.connect();
+                const cacheKey = dateStart.toLocaleDateString("en-US");
+                if (!cache.hasOwnProperty(cacheKey)) {
+                    await db.connect();
+                    cache[cacheKey] = await db
+                        .db(DATABASE_NAME)
+                        .collection('game_info')
+                        .findOne({
+                            timestamp: {
+                                $gte: dateStart,
+                                $lte: endOfDay(date),
+                            }
+                        });
+                }
+
                 /**
-                 * @type {{id:string,timestamp:string,game_info:{letters:string[],centerLetter:string,words:{}}}|null}
+                 * @type {GameInfo|null}
                  */
-                const result = await db
-                    .db(DATABASE_NAME)
-                    .collection('game_info')
-                    .findOne({
-                        timestamp: {
-                            $gte: startOfDay(date),
-                            $lte: endOfDay(date),
-                        }
-                    });
+                const result = cache[cacheKey];
                 if (result == null)
                     return res.status(404).json({success: false, data: {}});
 
@@ -78,7 +97,7 @@ module.exports = {
             try {
                 await db.connect();
                 /**
-                 * @type {{id:string,timestamp:string,game_info:{letters:string[],centerLetter:string,words:{}}}[]|null}
+                 * @type {GameInfo[]|null}
                  */
                 const result = await db
                     .db(DATABASE_NAME)
