@@ -1,7 +1,7 @@
 FROM node
 
 LABEL maintainer="arnyminer.z@gmail.com"
-LABEL version="1.1.0"
+LABEL version="1.1.1"
 
 RUN mkdir -p /opt/api
 
