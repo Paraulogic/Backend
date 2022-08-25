@@ -10,6 +10,8 @@ WORKDIR /opt/api
 COPY package.json .
 RUN npm install --quiet
 
+RUN git clone https://github.com/Paraulogic/Terms.git terms
+
 COPY . .
 
 EXPOSE ${HTTP_PORT:-3000}
