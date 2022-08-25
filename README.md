@@ -1,5 +1,7 @@
 # Paraulogic Backend
 
+[![Uses Gitmoji][gitmoji-badge]](https://gitmoji.dev)
+
 The backend code for the Paraulogic's apps.
 
 ### Repository State
@@ -17,6 +19,8 @@ The backend code for the Paraulogic's apps.
 [![Docker Hub Build Status][docker-build-badge]][docker-hub]
 [![Github Container Build Status][github-build-badge]][github-container]
 
+
+[gitmoji-badge]: https://img.shields.io/static/v1?label=Gitmoji&message=%20%F0%9F%98%9C%20%20%F0%9F%98%8D&color=FFDD67&style=for-the-badge
 
 [package-version-badge]: https://img.shields.io/github/package-json/v/Paraulogic/Backend?style=for-the-badge
 
