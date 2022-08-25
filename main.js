@@ -35,6 +35,9 @@ module.exports = {
 
         const app = express();
 
+        // Expose the terms
+        app.use('/terms', express.static('terms'))
+
         app.get('/', (req, res) => res.redirect('https://paraulogic.cat'));
 
         app.get('/github', (req, res) => res.redirect('https://github.com/Paraulogic/Android'));

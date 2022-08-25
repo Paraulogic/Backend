@@ -1,2 +1,5 @@
 # Ignore the locally installed node_modules
 /node_modules
+
+# Ignore the terms repository since it's downloaded by Dockerfile
+/terms
