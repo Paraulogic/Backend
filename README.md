@@ -41,3 +41,89 @@ The backend code for the Paraulogic's apps.
 [latest-release]: https://github.com/Paraulogic/Backend/releases/latest
 
 [issues]: https://github.com/Paraulogic/Backend/issues
+
+# How to use
+
+The recommended method to use is Docker Compose files, since a lot of variables and syncing is required.
+
+Also having production and development compose files is something to have into account. For example, the
+development `docker-compose.yml` file:
+
+```yaml
+version: '3'
+
+services:
+  api:
+    build: .
+    container_name: api
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+    environment:
+      HTTP_PORT: "${HTTP_PORT}"
+    working_dir: /opt/api
+    links:
+      - db
+    volumes:
+      - ./:/opt/api
+      - node_modules:/opt/api/node_modules
+  db:
+    image: mongo
+    container_name: mongo_db
+    restart: always
+    expose:
+      - "27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+  node_modules:
+```
+
+and `docker-compose.override.yml` for production environments:
+
+```yaml
+version: '3'
+
+services:
+  api:
+    image: arnyminerz/paraulogic-backend:latest
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      HTTP_PORT: "80"
+
+```
+
+Those files are already available in the repository, and can be launched with:
+
+```shell
+docker-compose up -d
+```
+
+for development. And
+
+```shell
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+```
+
+This last one will override certain parameters to make sure the environment is as stable as possible. The image will be
+selected from the already prebuilt ones at the container repository, and port will be preset at `80`.
+
+For development environments, the default port is `3000`, however, you can override it with environment variables.
+
+# Environment variables
+
+Environment variables can be passed manually with the Docker Compose files, or using a `.env` file:
+
+```.dotenv
+# The port to use for receiving the http requests.
+# Defaults to 3000
+HTTP_PORT=3000
+
+# The name of the Mongo database.
+# Defaults to "paraulogic"
+DATABASE_NAME=paraulogic
+```
