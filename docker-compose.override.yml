@@ -2,7 +2,7 @@ version: '3'
 
 services:
   api:
-    image: arnyminerz/paraulogic-backend:latest
+    image: ghcr.io/paraulogic/backend:1.1.0
     restart: always
     ports:
       - "80:80"
