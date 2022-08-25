@@ -37,6 +37,8 @@ module.exports = {
 
         app.get('/', (req, res) => res.redirect('https://paraulogic.cat'));
 
+        app.get('/github', (req, res) => res.redirect('https://github.com/Paraulogic/Android'));
+
         app.get('/v1/game_info', async (req, res) => {
             const query = req.query;
 
